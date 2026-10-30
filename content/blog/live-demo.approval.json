@@ -1,0 +1,11 @@
+{
+  "schema": "blogpub/approval/v1",
+  "slug": "live-demo",
+  "id": "2026-10-30-live-demo",
+  "contentHash": "sha256:cebfddb8cbf1510faa721932876def2d7e8c3e5436a5ab975cfc522425030fdc",
+  "author": "Ryan Phelan",
+  "publish_time": "2026-11-01T13:00:00Z",
+  "approved_at": "2026-10-30T21:30:00Z",
+  "nonce": "nonce-live-1",
+  "sig": "e5505056a0f70fd8e002977fee862cd43006a10fd22bbbd20423b7d1e61c3b6ea5f64c5b0671b68affdbbf14c7cd34f9d08f77bbf73babe1f5ca49bc69840503"
+}

@@ -3,23 +3,43 @@ on:
   push:
     branches: [ main ]
     paths: [ 'content/blog/**' ]
+  workflow_dispatch: {}
 permissions:
-  contents: write
-  pages: read
-concurrency: { group: blog-publish, cancel-in-progress: false }   # serialize publishes
+  contents: read
+  pages: write
+  id-token: write
+concurrency: { group: pages, cancel-in-progress: false }
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
       - run: pip install cryptography
-      - name: render articles
-        run: for md in content/blog/*.md; do python3 tools/render_page.py "$md"; done
-      - name: commit rendered output (github-actions is a ruleset bypass actor)
+      - name: re-validate every approved article BEFORE any deploy (privileged-deploy gate)
         run: |
-          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add writing/
-          git commit -m "render blog output [skip ci]" || { echo "nothing to render"; exit 0; }
-          git push
-      - name: wait for Pages deploy, then verify served body == rendered body
-        run: bash scripts/verify_live.sh
+          set -e
+          CHANGED="$(git ls-files content/blog | paste -sd, -)"
+          for md in content/blog/*.md; do
+            slug=$(basename "$md" .md)
+            python3 tools/validator.py --content "$md" \
+              --approval "content/blog/$slug.approval.json" \
+              --pubkey keys/approval-public.pem --changed "$CHANGED"
+          done
+      - name: render site into _site/
+        run: |
+          mkdir -p _site/writing
+          cp index.html _site/ 2>/dev/null || true
+          for md in content/blog/*.md; do python3 tools/render_page.py "$md"; done
+          cp -r writing/* _site/writing/ 2>/dev/null || true
+      - name: upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+      - id: deploy
+        name: deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+      - name: verify served body == approved body, else fail (social holds)
+        run: BASE="${{ steps.deploy.outputs.page_url }}" bash scripts/verify_pages.sh
