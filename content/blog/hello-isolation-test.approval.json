@@ -1,0 +1,11 @@
+{
+  "schema": "blogpub/approval/v1",
+  "slug": "hello-isolation-test",
+  "id": "t-0001",
+  "contentHash": "sha256:ec191c310ad8a9374c0e1ff4614f93c7f7fe67482369cc6eba99dc50745ab88f",
+  "author": "Ryan Phelan",
+  "publish_time": "2026-10-30T18:00:00Z",
+  "approved_at": "2026-10-30T17:55:00Z",
+  "nonce": "nonce-0001",
+  "sig": "1d3ddeecc98e6533588a3aba60fa7db84b475a26bee8fc5a42cd29574266ba343977ddb47cc02861f7ccdce4ae80656e111fcc209679e495850794a270d8d702"
+}

@@ -1,0 +1,25 @@
+name: blog-publish
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'content/blog/**' ]
+permissions:
+  contents: write
+  pages: read
+concurrency: { group: blog-publish, cancel-in-progress: false }   # serialize publishes
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install cryptography
+      - name: render articles
+        run: for md in content/blog/*.md; do python3 tools/render_page.py "$md"; done
+      - name: commit rendered output (github-actions is a ruleset bypass actor)
+        run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add writing/
+          git commit -m "render blog output [skip ci]" || { echo "nothing to render"; exit 0; }
+          git push
+      - name: wait for Pages deploy, then verify served body == rendered body
+        run: bash scripts/verify_live.sh

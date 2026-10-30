@@ -1,0 +1,27 @@
+name: blog-validate
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  blog-validate:            # this job name is the required-check context in the ruleset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: pip install cryptography
+      - name: compute changed files
+        id: diff
+        run: echo "files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | paste -sd, -)" >> "$GITHUB_OUTPUT"
+      - name: enforce content-only allowlist + validate each article
+        run: |
+          set -e
+          CHANGED="${{ steps.diff.outputs.files }}"
+          echo "changed: $CHANGED"
+          for f in $(echo "$CHANGED" | tr ',' ' '); do
+            case "$f" in content/blog/*) ;; *) echo "DISALLOWED PATH OUTSIDE content/blog/: $f"; exit 1;; esac
+          done
+          for md in $(echo "$CHANGED" | tr ',' '\n' | grep '\.md$' || true); do
+            slug=$(basename "$md" .md)
+            python3 tools/validator.py --content "$md" --approval "content/blog/$slug.approval.json" \
+              --pubkey keys/approval-public.pem --changed "$CHANGED"
+          done
