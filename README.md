@@ -62,3 +62,4 @@ RENDERED body hash before reporting success. The Actions run log is the evidence
 - keys/TEST-approval-*.pem is a TEST Approval Authority key for this harness only. The real
   signer is the Option C service built separately; its public key replaces keys/approval-public.pem.
 - Delete the repo and uninstall the App when testing is done.
+x
