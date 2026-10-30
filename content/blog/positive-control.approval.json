@@ -1,0 +1,11 @@
+{
+  "schema": "blogpub/approval/v1",
+  "slug": "positive-control",
+  "id": "pc-001",
+  "contentHash": "sha256:81adcd6f698a6989d51923e1734a2e7b80f8b8ddc23abf59d367474bf4dccecb",
+  "author": "Ryan Phelan",
+  "publish_time": "2026-10-30T00:00:00Z",
+  "approved_at": "2026-10-30T21:05:00Z",
+  "nonce": "nonce-pc-001",
+  "sig": "69dd8fa92cd403ef8144b9f6a75d73305b6b5a1c8b0acf540dbd68ffa5e60a5f6863902c6790ce84b2184dbee6652f1b73223204a1b21c10d690f1d739e7d802"
+}
